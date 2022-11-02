@@ -10,9 +10,11 @@ require('./db');
 require('./configs')(app);
 
 // middlewares gerais
+const { isAuthenticated } = require('./middlewares/jwt.middleware');
 
 // rotas
 app.use('/auth', require('./routes/auth.routes'));
+app.use('/api', isAuthenticated, require('./routes/todo.routes'));
 
 // erros
 require('./error-handling')(app);

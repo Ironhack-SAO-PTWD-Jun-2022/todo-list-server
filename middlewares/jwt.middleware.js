@@ -1,4 +1,4 @@
-const { express-jwt: jwt } = require('express-jwt');
+const { expressjwt: jwt } = require('express-jwt');
 
 // função par extrair o token do header da requisição
 const getTokenFromHeaders = (req) => {

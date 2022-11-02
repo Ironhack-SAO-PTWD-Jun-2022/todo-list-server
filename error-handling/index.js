@@ -1,7 +1,7 @@
 const handleError = (app) => {
   // este middleware executa quando uma requisição não for disponível.
   app.use((req, res, next) => {
-    req.status(404).json('Não encontrado!');
+    res.status(404).json('Não encontrado!');
   })
 
   // este middleware executa quando chamamos next(error) nas rotas anteriores.
@@ -12,7 +12,7 @@ const handleError = (app) => {
 
     // só enviamos a resposta se já não tiver sido enviada antes.
     if(!res.headersSent) {
-      req.status(500).json({
+      res.status(error.status || 500).json({
         message: error.message || 'Erro interno no servidor',
         error
       });
