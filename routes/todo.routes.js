@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const { throwError } = require('../utils/error.utils');
 
 const User = require('../models/User.model');
 const Todo = require('../models/Todo.model');
@@ -23,9 +24,7 @@ router.post('/', async (req, res, next) => {
   const { description } = req.body;
   try {
     if (!description) {
-      const error = new Error('Falta descrição.')
-      error.status = 400;
-      throw error;
+      throwError('Falta descrição.', 400);
     }
 
     const todoFromDB = await Todo.create({description, userId});
@@ -41,9 +40,7 @@ router.put('/edit/:todoId', async (req, res, next) => {
   const { description } = req.body;
   try {
     if (!description) {
-      const error = new Error('Descrição não pode ser vazia.');
-      error.status = 400;
-      throw error;
+      throwError('Descrição não pode ser vazia.', 400);
     }
 
     await Todo.findByIdAndUpdate(todoId, { description });
@@ -54,10 +51,14 @@ router.put('/edit/:todoId', async (req, res, next) => {
   }
 });
 
-router.put('/toggle-done/:todoId', async (req, res, next) => {
+router.put('/done/:todoId', async (req, res, next) => {
   const { todoId } = req.params;
+  const { done } = req.body;
   try {
-    const todoFromDB = await Todo.findByIdAndUpdate(todoId, [{ $set: { done: { $not: "$done" }}}], { new: true });
+    if (typeof done !== 'boolean') {
+      throwError('Tipo de informação não é válida.', 400);
+    }
+    const todoFromDB = await Todo.findByIdAndUpdate(todoId, { done }, { new: true });
     res.status(200).json(todoFromDB);
   } catch (error) {
     next(error);

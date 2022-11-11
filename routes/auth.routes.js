@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const { throwError } = require('../utils/error.utils');
 
 const { isAuthenticated } = require('../middlewares/jwt.middleware');
 const { encrypt, verify, generateToken } = require('../utils/auth.utils');
@@ -9,9 +10,7 @@ router.post('/signup', async (req, res, next) => {
   const { username, password } = req.body;
   try {
     if (!username, !password) {
-      const error = new Error('Todos os campos são obrigatórios.');
-      error.status = 400;
-      throw error;
+      throwError('Todos os campos são obrigatórios.', 400);
     }
 
     const hash = encrypt(password)
@@ -27,25 +26,19 @@ router.post('/login', async (req, res, next) => {
   const { username, password } = req.body;
   try {
     if (!username, !password) {
-      const error = new Error('Todos os campos são obrigatórios.');
-      error.status = 400;
-      throw error;
+      throwError('Todos os campos são obrigatórios.', 400);
     }
 
     const userFromDB = await User.findOne({ username });
 
     if (!userFromDB) {
-      const error = new Error('Usuário ou senha inválidos.');
-      error.status = 401;
-      throw error;
+      throwError('Usuário ou senha inválidos.', 401);
     }
 
     const passwordMatch = verify(password, userFromDB.passwordHash);
 
     if (!passwordMatch) {
-      const error = new Error('Usuário ou senha inválidos.');
-      error.status = 401;
-      throw error;
+      throwError('Usuário ou senha inválidos.', 401);
     }
 
     const { _id } = userFromDB;
