@@ -66,8 +66,10 @@ router.put('/done/:todoId', async (req, res, next) => {
 });
 
 router.delete('/:todoId', async (req, res, next) => {
+  const userId = req.payload._id;
   const { todoId } = req.params;
   try {
+    await User.findByIdAndUpdate(userId, { $pull: { todos: todoId } });
     await Todo.findByIdAndRemove(todoId);
     res.status(204).json();
   } catch (error) {
